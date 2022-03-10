@@ -19,7 +19,7 @@ module.exports = {
       },
       {
         test: /\.(png||jpg)$/, // png, jpg형식을 읽는다.
-        type: "asset/resource", // 파일을 내보내고 URL을 추출합니다 이전버젼 -> file-loader
+        type: "asset/inline", // data URI를 내보냅니다. 이전에는 url-loader
       },
     ],
   },
