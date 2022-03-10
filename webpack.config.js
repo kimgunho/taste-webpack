@@ -19,7 +19,12 @@ module.exports = {
       },
       {
         test: /\.(png||jpg)$/, // png, jpg형식을 읽는다.
-        type: "asset/inline", // data URI를 내보냅니다. 이전에는 url-loader
+        type: "asset", // 40kb미만은 inline, 이상은 resource로 대처
+        parser: {
+          dataUrlCondition: {
+            maxSize: 40 * 1024, // 40kb
+          },
+        },
       },
     ],
   },
