@@ -1,3 +1,4 @@
+import "./app.css";
 import * as math from "./math";
 
 (function () {
