@@ -60,8 +60,9 @@ package.json에서 명령어를 추가합니다.
 ```js
 // package.json
  "scripts": {
-    "build": "webpack"
+    "build": "webpack --progress"
   }
+  // --progress : 빌드상태를 커맨드라인에 표시합니다.
 ```
 
 이후 npm run build 명령어 입력시 실행가능 합니다.
@@ -128,7 +129,7 @@ module.exports = {
 };
 ```
 
-![asset/resource](./resource.png)
+![asset/resource](./md_images/resource.png)
 
 **asset/inline**
 
@@ -145,7 +146,7 @@ module.exports = {
 };
 ```
 
-![asset/inline](./inline.png)
+![asset/inline](./md_images/inline.png)
 
 **asset**
 
@@ -162,6 +163,140 @@ module.exports = {
     },
 }
 
+```
+
+### plugin
+
+로더는 각각의 파일들을 분할 모듈단위로 처리된다. 하지만 플러그인은 번들된 결과물이라는 한정에서
+동작한다. 번들된 파일을 정리하거나 관리하는 용도로 사용된다.
+웹팩에서 기본적으로 제공되는 기본내장 플러그인과 npm에서 다운받아 사용할 플러그인이 있다.
+
+### plugin-기본형
+
+**BannerPlugin**
+번들링된 파일에 각종 빌드정보 및 커밋정보를 삽입할 수 있다.
+
+```js
+const webpack = require("webpack");
+const ChildProcess = require("child_process");
+
+module.exports = {
+  plugins: [
+    new webpack.BannerPlugin({
+      banner: () => `
+      build date : ${new Date().toLocaleString()}
+      commit : ${ChildProcess.execSync("git rev-parse --short HEAD")}
+      anchor : ${ChildProcess.execSync("git config user.name")}
+      `,
+    }),
+  ]
+```
+
+**DefinePlugin**
+모드환경(개발,배포)에 따라 다른 api정보등을 처리할때 사용된다.
+빌드 타임에 결정된 값을 어플리이션에 전달할 때는 이 플러그인을 사용하자.
+
+```js
+const webpack = require("webpack");
+const currentMode = process.env.NODE_ENV; // development or production
+
+new webpack.DefinePlugin({
+    "api.domain": JSON.stringify("http://dev...."), // api-domain을 불러오면 http://dev....가 로드된다.
+    "current.mode":
+    currentMode === "development" // 현재 모드에 따라서 사용되는 api 변경
+        ? JSON.stringify("develop-api")
+        : JSON.stringify("production-api"),
+}),
+```
+
+### plugin-서드 파티 패키지
+
+**HtmlWebpackPlugin**
+html파일을 후처리하는데 사용된다. 빌드되는 html파일의 값을 넣거나 압축이 가능하다.
+!(사이트 참조)[https://github.com/jantimon/html-webpack-plugin#options]
+
+```js
+npm install -D html-webpack-plugin
+```
+
+```js
+//webpack.config.js
+const currentMode = process.env.NODE_ENV;
+
+new HtmlWebpackPlugin({
+    title: currentMode === "development" ? "개발용" : "배포용",
+    template: "./index.html",
+    minify:
+    currentMode === "production"
+        ? {
+            collapseWhitespace: true, // 빈칸 제거
+            removeComments: true, // 주석 제거
+        }
+        : false,
+}),
+
+//index.html
+<html>
+    <head>
+        <title><%= htmlWebpackPlugin.options.title %></title>
+    </head>
+    ...body
+</html>
+```
+
+**CleanWebpackPlugin**
+빌드 이전 결과물을 전체삭제한 후 재빌드되는 최신파일들로 유지되게한다.
+
+```js
+npm install -D clean-webpack-plugin
+```
+
+```js
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+
+module.exports = {
+  plugins: [new CleanWebpackPlugin()],
+};
+```
+
+**MiniCssExtractPlugin**
+개발모드가 아닌 배포용일때는 css를 js에 통합하지않고 분리하는것이 성능적으로 좋다.
+그렇기에 위 패키지를 이용한다.
+
+```js
+npm install -D mini-css-extract-plugin
+```
+
+```js
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+module.exports = {
+  plugins: [
+    ...(process.env.NODE_ENV === "production"
+      ? [new MiniCssExtractPlugin({ filename: `[name].css` })]
+      : []),
+  ],
+};
+```
+
+**또한 위 패키지는 개발모드에서 사용되던 css-loader와 style-loader의 별개로 프로덕션모드에서는 MiniCssExtractPlugin 패키지가 제공하는 별도로 CSS파일을 추출하는 다른 로더가 필요하다.**
+
+```js
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [
+          process.env.NODE_ENV === "production"
+            ? MiniCssExtractPlugin.loader // 프로덕션 환경
+            : "style-loader", // 개발 환경
+          "css-loader",
+        ],
+      },
+    ],
+  },
+};
 ```
 
 ## 공부하며 든 의문점 리스트
