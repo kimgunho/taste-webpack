@@ -38,6 +38,11 @@ module.exports = {
           },
         },
       },
+      {
+        test: /\.js$/,
+        use: ["babel-loader"], // babel-loader 설정
+        exclude: /node_modules/, // node_modules는 바벨하지 않는다.
+      },
     ],
   },
   plugins: [

@@ -6,3 +6,9 @@ import art from "./art.jpg";
 (function () {
   math.math(44);
 })();
+
+const _a = () => {
+  console.log("aa");
+};
+
+_a();

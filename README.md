@@ -76,6 +76,39 @@ webpack은 모든 파일을 모듈화합니다.
 loader는 여러 다른 TS와 같은 파일은 JS로 변환해주거나 이미지를 data URL형식의 문자열로도 배포합니다.
 또한 css파일을 js에서 직접 읽어올수 있도록 합니다.
 
+**babel**
+현재 IE는 지원을 종료하였지만 그래도 크로스 브라우징을 위한목적의 ECMAScript2015+ 이상버젼을 이하버젼로 낮추는 역할은 중요합니다.
+이를 위하여 바벨은 존재하며 최신 js의 코드를 구버젼 브라우저에서도
+잘돌아가게끔 할 목적을 가지고 있습니다.
+
+```js
+npm i babel-loader @babel/core @babel/preset-env
+```
+
+- babel-loader : 웹팩에서 바벨을 사용하는 로더모듈
+- @babel/core : 바벨의 역할을 하는 시스템
+- @babel/presets-env : js를 다운그레이드하는 내용을 담은 프리셋
+
+npm 설치 후
+babel.config.js 또는 .babelrc 파일을 만든 후
+설치된 바벨의 스타일을 지정합니다.
+
+```js
+{
+  "presets": ["@babel/preset-env"]
+}
+```
+
+이후 웹팩의 모듈부분에서 빌드될 시 사용될 바벨을 추가합니다.
+
+```js
+{
+  test: /\.js$/,
+  use: ["babel-loader"], // babel-loader 설정
+  exclude: /node_modules/, // node_modules는 바벨하지 않는다.
+},
+```
+
 **css-loader & style-loader**
 CSS파일을 모듈화하여 JS에서 읽어오려면
 css-loader, style-loader를 사용합니다.
