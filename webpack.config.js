@@ -20,13 +20,14 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.css$/, // css형식을 읽는다.
+        test: /\.(css||scss)$/, // css형식을 읽는다.
         // use: ["style-loader", "css-loader"], // 읽는 순서는 뒤에서부터 앞으로이다. 1.css -> 2.style style-loader는 css를 접목하며 css-loader는 css를 자바스크립트 모듈화한다.
         use: [
           currentMode === "production"
             ? MiniCssExtractPlugin.loader // 프로덕션 환경
             : "style-loader", // 개발 환경
           "css-loader",
+          "sass-loader", // sass-loader 실행
         ],
       },
       {

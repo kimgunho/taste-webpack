@@ -137,6 +137,29 @@ module.exports = {
 - css-loader : css를 자바스크립트 모듈화한다.
 - style-loader : 모듈화된 css를 js에 접목시켜 돔에 추가하는 역할
 
+**sass/scss**
+스타일에서 css뿐 아니라 sass or scss를 컴파일러 할수도있다.
+
+```js
+npm i -D sass-loader node-sass
+```
+
+- sass-loader : 웹팩에서 sass파일을 읽기위함의 로더
+- node-sass : sass파일을 스타일css로 컴파일러 하는 역할입니다.
+
+```js
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.(css||scss)$/, // .css 확장자로 끝나는 모든 파일
+        use: ["css-loader", "style-loader", "sass-loader"], // loader를 적용한다
+      },
+    ],
+  },
+};
+```
+
 **asset**
 asset loader는 이전 웹팩4버젼의 file-loader, url-loader와 같은 역할을 합니다.
 asset은 4가지 로더를 제공한다. (하지만 기록은 우선적으로 공부한 부분만 기록됩니다.)
